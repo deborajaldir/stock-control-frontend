@@ -1,16 +1,52 @@
-# React + Vite
+# 🎨 Front-end - Sistema de Controle de Estoque
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web da aplicação de controle de estoque, desenvolvida em React, responsável pela interação do usuário com o sistema.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Funcionalidades
 
-## React Compiler
+- Listagem de produtos  
+- Cadastro e edição de produtos  
+- Integração com API REST  
+- Interface responsiva  
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tecnologias
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React  
+- JavaScript  
+- CSS  
+- Consumo de API REST  
+
+---
+
+## 🔗 Integração
+
+Este front-end consome a API disponível em:  
+👉 https://github.com/deborajaldir/stock-control  
+
+---
+
+## ▶️ Como executar o projeto
+
+1.  Clone o repositório:
+    ```bash
+    git clone https://github.com/deborajaldir/stock-control-frontend.git
+    ```
+2.  Instale as dependências:
+    ```bash
+    npm install
+    ```
+3.  Inicie o servidor de desenvolvimento:
+    ```bash
+    npm run dev
+    ```
+---
+
+## 📌 Status
+
+🚧 Em desenvolvimento.
+
+---
