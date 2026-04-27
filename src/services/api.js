@@ -17,8 +17,30 @@ export async function createProduct(product) {
   return response.json();
 }
 
+export async function updateProduct(id, product) {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(product),
+  });
+
+  return response.json();
+}
+
 export async function deleteProduct(id) {
   await fetch(`${BASE_URL}/${id}`, {
     method: "DELETE",
   });
+}
+
+export async function findProductByNameAndCategory(name, category) {
+  const response = await fetch(
+    `http://localhost:8080/products/search/name-category?name=${name}&category=${category}`
+  );
+
+  if (!response.ok) return null;
+
+  return response.json();
 }
