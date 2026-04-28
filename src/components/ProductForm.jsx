@@ -11,7 +11,6 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
-
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingProduct, setPendingProduct] = useState(null);
 

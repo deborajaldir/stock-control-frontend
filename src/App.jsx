@@ -25,18 +25,20 @@ function App() {
     loadProducts();
   }
 
+  // 🔍 filtro
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase()) ||
     product.category.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
       <h1>Stock</h1>
 
-      {/* ✅ TOAST NO LUGAR CERTO */}
+      {/* 🔔 TOAST */}
       <Toast alert={alert} />
 
+      {/* 📦 FORM */}
       <ProductForm
         onSuccess={loadProducts}
         editingProduct={editingProduct}
@@ -44,18 +46,38 @@ function App() {
         setAlert={setAlert}
       />
 
-      <input
-        type="text"
-        placeholder="Search..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {/* 🔍 BUSCA */}
+      <div style={{ margin: "20px 0", display: "flex", gap: "10px" }}>
+        <input
+          type="text"
+          placeholder="Search by name or category..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ flex: 1, padding: "8px" }}
+        />
 
-      <ProductList
-        products={filteredProducts}
-        onDelete={handleDelete}
-        onEdit={setEditingProduct}
-      />
+        <button onClick={() => setSearch("")}>
+          Clear
+        </button>
+      </div>
+
+      {/* 📊 CONTADOR DINÂMICO */}
+      <p style={{ marginBottom: "10px", fontSize: "14px", color: "#555" }}>
+        {search
+          ? `${filteredProducts.length} result(s) found`
+          : `${products.length} total product(s)`}
+      </p>
+
+      {/* ❌ MENSAGEM VAZIA */}
+      {filteredProducts.length === 0 ? (
+        <p style={{ color: "#999" }}>No products found</p>
+      ) : (
+        <ProductList
+          products={filteredProducts}
+          onDelete={handleDelete}
+          onEdit={setEditingProduct}
+        />
+      )}
     </div>
   );
 }
