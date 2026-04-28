@@ -9,10 +9,19 @@ function App() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [search, setSearch] = useState("");
   const [alert, setAlert] = useState(null);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
     loadProducts();
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   async function loadProducts() {
     const data = await getProducts();
@@ -27,8 +36,8 @@ function App() {
 
   // 🔍 filtro
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase()) ||
-    product.category.toLowerCase().includes(search.toLowerCase())
+    product.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+    product.category.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   return (
@@ -76,6 +85,7 @@ function App() {
           products={filteredProducts}
           onDelete={handleDelete}
           onEdit={setEditingProduct}
+          search={search}
         />
       )}
     </div>

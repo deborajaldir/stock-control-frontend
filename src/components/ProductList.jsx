@@ -1,6 +1,6 @@
 import ProductCard from "./ProductCard";
 
-function ProductList({ products, onDelete, onEdit }) {
+function ProductList({ products, onDelete, onEdit, search }) {
   return (
     <>
       {products.map((product) => (
@@ -9,6 +9,7 @@ function ProductList({ products, onDelete, onEdit }) {
           product={product}
           onDelete={onDelete}
           onEdit={onEdit}
+          search={search}
         />
       ))}
     </>
