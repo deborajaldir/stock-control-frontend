@@ -26,6 +26,22 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
   async function handleSubmit(e) {
     e.preventDefault();
 
+    // ✅ VALIDAÇÃO NO LUGAR CERTO
+    if (!name || !category) {
+      setAlert({ type: "error", text: "Name and category are required" });
+      return;
+    }
+
+    if (isNaN(quantity) || Number(quantity) <= 0) {
+      setAlert({ type: "error", text: "Quantity must be a valid number" });
+      return;
+    }
+
+    if (isNaN(price) || Number(price) <= 0) {
+      setAlert({ type: "error", text: "Price must be a valid number" });
+      return;
+    }
+
     const product = {
       name,
       quantity: Number(quantity),
@@ -48,16 +64,24 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
   }
 
   async function saveProduct(product) {
-    if (editingProduct) {
-      await updateProduct(editingProduct.id, product);
-      setAlert({ type: "success", text: "Product updated successfully" });
-    } else {
-      await createProduct(product);
-      setAlert({ type: "success", text: "Product created successfully" });
-    }
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, product);
+        setAlert({ type: "success", text: "Product updated successfully" });
+      } else {
+        await createProduct(product);
+        setAlert({ type: "success", text: "Product created successfully" });
+      }
 
-    resetForm();
-    onSuccess();
+      resetForm();
+      onSuccess();
+
+    } catch (error) {
+      setAlert({
+        type: "error",
+        text: error.message || "Failed to save product",
+      });
+    }
   }
 
   function resetForm() {
@@ -71,6 +95,7 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
   return (
     <>
       <form onSubmit={handleSubmit}>
+
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
         <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Quantity" />
         <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />

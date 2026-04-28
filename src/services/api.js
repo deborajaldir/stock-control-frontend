@@ -6,13 +6,18 @@ export async function getProducts() {
 }
 
 export async function createProduct(product) {
-  const response = await fetch(BASE_URL, {
+  const response = await fetch("http://localhost:8080/products", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(product),
   });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Error creating product");
+  }
 
   return response.json();
 }
