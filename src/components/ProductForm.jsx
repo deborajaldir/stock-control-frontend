@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
-import { createProduct, updateProduct, findProductByNameAndCategory } from "../services/api";
+import {
+  createProduct,
+  updateProduct,
+  findProductByNameAndCategory,
+} from "../services/api";
+import ConfirmModal from "./ConfirmModal";
 
-function ProductForm({ onSuccess, editingProduct, setEditingProduct }) {
+function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert }) {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingProduct, setPendingProduct] = useState(null);
 
   useEffect(() => {
     if (editingProduct) {
@@ -17,59 +25,78 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct }) {
   }, [editingProduct]);
 
   async function handleSubmit(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  const product = {
-    name,
-    quantity: Number(quantity),
-    price: Number(price),
-    category,
-  };
+    const product = {
+      name,
+      quantity: Number(quantity),
+      price: Number(price),
+      category,
+    };
 
-  if (editingProduct) {
-    await updateProduct(editingProduct.id, product);
+    // 👉 verifica duplicado
+    if (!editingProduct) {
+      const existing = await findProductByNameAndCategory(name, category);
 
-  } else {
-    const existing = await findProductByNameAndCategory(name, category);
-
-    if (existing) {
-      const confirmUpdate = window.confirm(
-        "Product already exists.\n\nDo you want to update price and add quantity?"
-      );
-
-      if (confirmUpdate) {
-        const updatedProduct = {
-          ...existing,
-          quantity: existing.quantity + product.quantity,
-          price: product.price,
-        };
-
-        await updateProduct(existing.id, updatedProduct);
+      if (existing && existing.price !== product.price) {
+        setPendingProduct(product);
+        setShowConfirm(true);
+        return;
       }
-
-    } else {
-      await createProduct(product);
     }
+
+    await saveProduct(product);
   }
 
-  setName("");
-  setQuantity("");
-  setPrice("");
-  setCategory("");
-  setEditingProduct(null);
-  onSuccess();
-}
-  return (
-    <form onSubmit={handleSubmit}>
-      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-      <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Quantity" />
-      <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
-      <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category" />
+  async function saveProduct(product) {
+    if (editingProduct) {
+      await updateProduct(editingProduct.id, product);
+      setAlert({ type: "success", text: "Product updated successfully" });
+    } else {
+      await createProduct(product);
+      setAlert({ type: "success", text: "Product created successfully" });
+    }
 
-      <button type="submit">
-        {editingProduct ? "Update" : "Register"}
-      </button>
-    </form>
+    resetForm();
+    onSuccess();
+  }
+
+  function resetForm() {
+    setName("");
+    setQuantity("");
+    setPrice("");
+    setCategory("");
+    setEditingProduct(null);
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
+        <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Quantity" />
+        <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
+        <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category" />
+
+        <button type="submit">
+          {editingProduct ? "Update" : "Register"}
+        </button>
+      </form>
+
+      {/* 🔥 MODAL */}
+      <ConfirmModal
+        open={showConfirm}
+        message="Product already exists with a different price. Do you want to update it?"
+        onCancel={() => {
+          setShowConfirm(false);
+          setPendingProduct(null);
+        }}
+        onConfirm={async () => {
+          await saveProduct(pendingProduct);
+          setShowConfirm(false);
+          setPendingProduct(null);
+        }}
+      />
+    </>
   );
 }
 
