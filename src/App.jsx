@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import ProductForm from "./components/ProductForm";
 import ProductList from "./components/ProductList";
 import { getProducts, deleteProduct } from "./services/api";
+import Toast from "./components/Toast";
 
 function App() {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [search, setSearch] = useState("");
+  const [alert, setAlert] = useState(null);
 
   useEffect(() => {
     loadProducts();
@@ -19,10 +21,10 @@ function App() {
 
   async function handleDelete(id) {
     await deleteProduct(id);
+    setAlert({ type: "success", text: "Product deleted successfully" });
     loadProducts();
   }
 
-  // 🔎 filtro por nome + categoria
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(search.toLowerCase()) ||
     product.category.toLowerCase().includes(search.toLowerCase())
@@ -32,44 +34,28 @@ function App() {
     <div style={{ padding: "20px" }}>
       <h1>Stock</h1>
 
+      {/* ✅ TOAST NO LUGAR CERTO */}
+      <Toast alert={alert} />
+
       <ProductForm
         onSuccess={loadProducts}
         editingProduct={editingProduct}
         setEditingProduct={setEditingProduct}
+        setAlert={setAlert}
       />
 
-      {/* 🔍 BUSCA */}
-      <div style={{ margin: "20px 0" }}>
-        <input
-          type="text"
-          placeholder="Search by name or category..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{
-            padding: "8px",
-            width: "250px",
-            marginRight: "10px",
-          }}
-        />
+      <input
+        type="text"
+        placeholder="Search..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
-        <button onClick={() => setSearch("")}>
-          Clear
-        </button>
-      </div>
-
-      {/* 📊 CONTAGEM */}
-      <p>{filteredProducts.length} product(s) found</p>
-
-      {/* ❌ MENSAGEM VAZIA */}
-      {filteredProducts.length === 0 ? (
-        <p>No products found</p>
-      ) : (
-        <ProductList
-          products={filteredProducts}
-          onDelete={handleDelete}
-          onEdit={setEditingProduct}
-        />
-      )}
+      <ProductList
+        products={filteredProducts}
+        onDelete={handleDelete}
+        onEdit={setEditingProduct}
+      />
     </div>
   );
 }
