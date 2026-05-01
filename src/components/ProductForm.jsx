@@ -13,6 +13,7 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
   const [category, setCategory] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingProduct, setPendingProduct] = useState(null);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (editingProduct) {
@@ -26,21 +27,27 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
   async function handleSubmit(e) {
     e.preventDefault();
 
-    // ✅ VALIDAÇÃO NO LUGAR CERTO
-    if (!name || !category) {
-      setAlert({ type: "error", text: "Name and category are required" });
-      return;
-    }
+    const newErrors = {};
+
+    if (!name) newErrors.name = "Name is required";
+    if (!category) newErrors.category = "Category is required";
 
     if (isNaN(quantity) || Number(quantity) <= 0) {
-      setAlert({ type: "error", text: "Quantity must be a valid number" });
-      return;
+      newErrors.quantity = "Enter a valid quantity";
     }
 
     if (isNaN(price) || Number(price) <= 0) {
-      setAlert({ type: "error", text: "Price must be a valid number" });
+      newErrors.price = "Enter a valid price";
+    }
+
+    // 👉 se tiver erro, salva e PARA
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+
+    // limpa erros se estiver tudo ok
+    setErrors({});
 
     const product = {
       name,
@@ -49,7 +56,6 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
       category,
     };
 
-    // 👉 verifica duplicado
     if (!editingProduct) {
       const existing = await findProductByNameAndCategory(name, category);
 
@@ -90,20 +96,73 @@ function ProductForm({ onSuccess, editingProduct, setEditingProduct, setAlert })
     setPrice("");
     setCategory("");
     setEditingProduct(null);
+    setErrors({});
   }
 
   return (
     <>
       <form onSubmit={handleSubmit}>
+        <input
+          className={`input ${errors.name ? "input-error" : ""}`}
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            setErrors((prev) => ({ ...prev, name: null }));
+          }}
+          placeholder="Name"
+        />
 
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-        <input value={quantity} onChange={(e) => setQuantity(e.target.value)} placeholder="Quantity" />
-        <input value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price" />
-        <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category" />
+        {errors.name && <p style={{ color: "#be123c", fontSize: "12px" }}>{errors.name}</p>}
 
-        <button type="submit">
-          {editingProduct ? "Update" : "Register"}
-        </button>
+        <input
+          className={`input ${errors.quantity ? "input-error" : ""}`}
+          value={quantity}
+          onChange={(e) => {
+            setQuantity(e.target.value);
+            setErrors((prev) => ({ ...prev, quantity: null }));
+          }}
+          placeholder="Quantity"
+        />
+
+        {errors.quantity && <p style={{ color: "#be123c", fontSize: "12px" }}>{errors.quantity}</p>}
+
+        <input
+          className={`input ${errors.price ? "input-error" : ""}`}
+          value={price}
+          onChange={(e) => {
+            setPrice(e.target.value);
+            setErrors((prev) => ({ ...prev, price: null }));
+          }}
+          placeholder="Price"
+        />
+
+        {errors.price && <p style={{ color: "#be123c", fontSize: "12px" }}>{errors.price}</p>}
+
+        <input
+          className={`input ${errors.category ? "input-error" : ""}`}
+          value={category}
+          onChange={(e) => {
+            setCategory(e.target.value);
+            setErrors((prev) => ({ ...prev, category: null }));
+          }}
+          placeholder="Category"
+        />
+
+        {errors.category && <p style={{ color: "#be123c", fontSize: "12px" }}>{errors.category}</p>}
+
+        <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+          <button type="submit" className="btn-primary">
+            {editingProduct ? "Update" : "Register"}
+          </button>
+
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={resetForm}
+          >
+            Clear
+          </button>
+        </div>
       </form>
 
       {/* 🔥 MODAL */}

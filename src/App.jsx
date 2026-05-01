@@ -3,6 +3,7 @@ import ProductForm from "./components/ProductForm";
 import ProductList from "./components/ProductList";
 import { getProducts, deleteProduct } from "./services/api";
 import Toast from "./components/Toast";
+import "./styles/App.css";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -10,10 +11,16 @@ function App() {
   const [search, setSearch] = useState("");
   const [alert, setAlert] = useState(null);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 6;
 
   useEffect(() => {
     loadProducts();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,54 +47,85 @@ function App() {
     product.category.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
+  const indexOfLast = currentPage * productsPerPage;
+  const indexOfFirst = indexOfLast - productsPerPage;
+
+  const currentProducts = filteredProducts.slice(indexOfFirst, indexOfLast);
+
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <h1>Stock</h1>
+    <div className="app-container">
+      <div className="card">
+        <h1>Stock</h1>
 
-      {/* 🔔 TOAST */}
-      <Toast alert={alert} />
+        {/* 🔔 TOAST */}
+        <Toast alert={alert} />
 
-      {/* 📦 FORM */}
-      <ProductForm
-        onSuccess={loadProducts}
-        editingProduct={editingProduct}
-        setEditingProduct={setEditingProduct}
-        setAlert={setAlert}
-      />
-
-      {/* 🔍 BUSCA */}
-      <div style={{ margin: "20px 0", display: "flex", gap: "10px" }}>
-        <input
-          type="text"
-          placeholder="Search by name or category..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ flex: 1, padding: "8px" }}
+        {/* 📦 FORM */}
+        <ProductForm
+          onSuccess={loadProducts}
+          editingProduct={editingProduct}
+          setEditingProduct={setEditingProduct}
+          setAlert={setAlert}
         />
 
-        <button onClick={() => setSearch("")}>
-          Clear
-        </button>
+        {/* 🔍 BUSCA */}
+        <div className="search-box">
+          <input
+            className="input"
+            type="text"
+            placeholder="Search by name or category..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <button className="btn-secondary" onClick={() => setSearch("")}>
+            Clear
+          </button>
+        </div>
+
+        {/* 📊 CONTADOR */}
+        <p className="count">
+          {search
+            ? `${filteredProducts.length} result(s) found`
+            : `${products.length} total product(s)`}
+        </p>
+
+        {/* ❌ / 📋 LISTA */}
+        {filteredProducts.length === 0 ? (
+          <p className="empty">No products found</p>
+        ) : (
+          <ProductList
+            products={currentProducts}
+            onDelete={handleDelete}
+            onEdit={setEditingProduct}
+            search={search}
+          />
+        )}
+
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "20px" }}>
+          <button
+            className="btn-secondary"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+          >
+            Prev
+          </button>
+
+          <span style={{ alignSelf: "center", fontSize: "14px" }}>
+            Page {currentPage} of {totalPages || 1}
+          </span>
+
+          <button
+            className="btn-secondary"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
-
-      {/* 📊 CONTADOR DINÂMICO */}
-      <p style={{ marginBottom: "10px", fontSize: "14px", color: "#555" }}>
-        {search
-          ? `${filteredProducts.length} result(s) found`
-          : `${products.length} total product(s)`}
-      </p>
-
-      {/* ❌ MENSAGEM VAZIA */}
-      {filteredProducts.length === 0 ? (
-        <p style={{ color: "#999" }}>No products found</p>
-      ) : (
-        <ProductList
-          products={filteredProducts}
-          onDelete={handleDelete}
-          onEdit={setEditingProduct}
-          search={search}
-        />
-      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import ProductCard from "./ProductCard";
 
 function ProductList({ products, onDelete, onEdit, search }) {
   return (
-    <>
+    <div className="product-grid">
       {products.map((product) => (
         <ProductCard
           key={product.id}
@@ -12,7 +12,7 @@ function ProductList({ products, onDelete, onEdit, search }) {
           search={search}
         />
       ))}
-    </>
+    </div>
   );
 }
 
