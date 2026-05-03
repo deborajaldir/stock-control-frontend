@@ -47,7 +47,7 @@ O projeto é organizado em componentes reutilizáveis:
 
 ## 📷 Preview
 
-### 🔹 interface
+### 🔹 Interface
 ![Interface](./demo.gif)
 
 ### 🔹 Interface da aplicação
