@@ -45,7 +45,13 @@ export async function findProductByNameAndCategory(name, category) {
     `https://stock-control-api-owvi.onrender.com/products/search/name-category?name=${name}&category=${category}`
   );
 
-  if (!response.ok) return null;
+  if (response.status === 404) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Erro ao buscar produto");
+  }
 
   return response.json();
 }
