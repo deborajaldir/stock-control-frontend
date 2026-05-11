@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/products";
+const BASE_URL = "https://stock-control-api-owvi.onrender.com//products";
 
 export async function getProducts() {
   const response = await fetch(BASE_URL);
@@ -6,7 +6,7 @@ export async function getProducts() {
 }
 
 export async function createProduct(product) {
-  const response = await fetch("http://localhost:8080/products", {
+  const response = await fetch("https://stock-control-api-owvi.onrender.com//products", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -42,7 +42,7 @@ export async function deleteProduct(id) {
 
 export async function findProductByNameAndCategory(name, category) {
   const response = await fetch(
-    `http://localhost:8080/products/search/name-category?name=${name}&category=${category}`
+    `https://stock-control-api-owvi.onrender.com/products/search/name-category?name=${name}&category=${category}`
   );
 
   if (!response.ok) return null;
