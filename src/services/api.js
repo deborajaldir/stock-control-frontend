@@ -1,4 +1,4 @@
-const BASE_URL = "https://stock-control-api-owvi.onrender.com//products";
+const BASE_URL = "https://stock-control-api-owvi.onrender.com/products";
 
 export async function getProducts() {
   const response = await fetch(BASE_URL);
@@ -6,7 +6,7 @@ export async function getProducts() {
 }
 
 export async function createProduct(product) {
-  const response = await fetch("https://stock-control-api-owvi.onrender.com//products", {
+  const response = await fetch("https://stock-control-api-owvi.onrender.com/products", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
